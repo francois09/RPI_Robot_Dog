@@ -1,0 +1,4 @@
+__pycache__/
+*.py[cod]
+IP.txt
+point.txt
