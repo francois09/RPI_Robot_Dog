@@ -1,0 +1,14 @@
+[Unit]
+Description=Robot Dog autostart
+After=network.target nss-user-lookup.target auditd.service
+
+[Service]
+User=root
+PermissionsStartOnly=true
+ExecStart=/root/RobotServer.sh
+Restart=on-failure
+RestartSec=5
+KillMode=process
+
+[Install]
+WantedBy=multi-user.target
