@@ -419,7 +419,7 @@ class Control:
             if  (self.order[0]==cmd.CMD_BALANCE and self.order[1]=='0')or(self.balance_flag==True and self.order[0]!='')or(self.move_count>self.run_time_limit):
                 Thread_conditiona=threading.Thread(target=self.condition)
                 Thread_conditiona.start()
-                self.balance_flag==False
+                self.balance_flag = False
                 break
     def postureBalance(self,r,p,y,h=1):
         b = 76
