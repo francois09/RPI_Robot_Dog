@@ -20,7 +20,7 @@ class Servo:
             angle=self.angleMax
         data=self.map(angle,0,180,102,512)
         #print(data,data/4096*0.02)
-        self.setPWM(channel, 0, int(data))
+        self.setPWM(channel, int(data))
  
 # Main program logic follows:
 if __name__ == '__main__':
