@@ -1,7 +1,6 @@
 #!/usr/bin/python
 
 from PCA9685 import PCA9685
-import time 
 
 # ============================================================================
 # Servo board Driver
@@ -12,7 +11,7 @@ import time
 
 class ServoBoard:
 
-    # Values
+    # Values hardware coded
     __PCA_ADDRESS = 0x40
 
     def __init__(self):

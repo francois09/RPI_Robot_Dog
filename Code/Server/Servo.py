@@ -18,9 +18,9 @@ class Servo:
             angle = self.angleMin
         elif angle >self.angleMax:
             angle=self.angleMax
-        date=self.map(angle,0,180,102,512)
-        #print(date,date/4096*0.02)
-        self.setPWM(channel, 0, int(date))
+        data=self.map(angle,0,180,102,512)
+        #print(data,data/4096*0.02)
+        self.setPWM(channel, 0, int(data))
  
 # Main program logic follows:
 if __name__ == '__main__':
