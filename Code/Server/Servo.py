@@ -5,11 +5,14 @@ class Servo:
     def __init__(self):
         self.angleMin=18
         self.angleMax=162
-        self.pwm = PCA9685(address=0x40, debug=True)   
+        self.pwm = PCA9685(address=0x40)
         self.pwm.setPWMFreq(50)               # Set the cycle frequency of PWM
     #Convert the input angle to the value of pca9685
     def map(self,value,fromLow,fromHigh,toLow,toHigh):
         return (toHigh-toLow)*(value-fromLow) / (fromHigh-fromLow) + toLow
+    def setPWM(self,channel,value):
+        self.pwm.setLED_duty(channel,0,value)
+
     def setServoAngle(self,channel, angle):
         if angle < self.angleMin:
             angle = self.angleMin
@@ -17,7 +20,7 @@ class Servo:
             angle=self.angleMax
         date=self.map(angle,0,180,102,512)
         #print(date,date/4096*0.02)
-        self.pwm.setPWM(channel, 0, int(date))
+        self.setPWM(channel, 0, int(date))
  
 # Main program logic follows:
 if __name__ == '__main__':
@@ -33,13 +36,3 @@ if __name__ == '__main__':
         except KeyboardInterrupt:
             print ("\nEnd of program")
             break
-
-           
-        
-        
-
-
-        
-        
-        
-        

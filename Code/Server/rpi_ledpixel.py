@@ -161,11 +161,11 @@ class Freenove_RPI_WS281X:
 if __name__ == '__main__':
     import time
     import os
-    led = Freenove_RPI_WS281X(4, 255, "RGB")
+    led = Freenove_RPI_WS281X(7, 255, "RGB")
 
     try:
         if led.check_rpi_ws281x_state() != 0:
-            led.set_led_count(4)
+            led.set_led_count(7)
             led.set_all_led_color_data(255, 0, 0)
             led.show()
             time.sleep(0.5)
