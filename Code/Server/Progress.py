@@ -5,10 +5,22 @@ import time
 from Led import *
 led=Led()
 
+def Led_stopped():
+    try:
+        # red wipe
+        led.colorWipe([63,0,0])
+        time.sleep(1)
+        led.colorWipe([0, 0, 0])   #turn off the light
+        led.colorWipe([63,0,0])
+        time.sleep(1)
+        led.colorWipe([0, 0, 0])   #turn off the light
+    except KeyboardInterrupt:
+        led.colorWipe([0, 0, 0])   #turn off the light
+
 def Led_fetch():
     try:
-        # Red wipe
-        led.colorWipe([63,0,0])
+        # white wipe
+        led.colorWipe([63,63,63])
         led.colorWipe([0, 0, 0])   #turn off the light
     except KeyboardInterrupt:
         led.colorWipe([0, 0, 0])   #turn off the light
@@ -84,3 +96,5 @@ if __name__ == '__main__':
         Led_pull()
     if sys.argv[1] == 'start':
         Led_start()
+    if sys.argv[1] == 'stop':
+        Led_stopped()
