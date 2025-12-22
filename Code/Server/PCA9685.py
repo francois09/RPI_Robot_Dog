@@ -52,12 +52,12 @@ class PCA9685:
   __WAIT_CYCLE = 0.0005 # 500 µs
   __INTERNAL_CLOCK = 25000000.0 # 25 MHz
   __CYCLE_TICKS = 4096 # Nubmer of steps in a cycle
-  
+
   def __init__(self, address):
     self.bus = smbus.SMBus(1)
     self.address = address
     # 
-    # mode1 = self.read(__MODE1)
+    # mode1 = self.read(self.__MODE1)
     # self.write(self.__MODE1, 0x00)
 
   def write(self, reg, value):
@@ -76,19 +76,19 @@ class PCA9685:
 
   def sleep(self):
     # If sleep mode is set without stopping PWM, Reset will raise
-    mode = self.read(__MODE1)
-    newmode = self.bit_set( self.bit_clear(mode, __MODE_RESTART), __MODE1_SLEEP)
-    self.write(__MODE1,newmode)
+    mode = self.read(self.__MODE1)
+    newmode = self.bit_set( self.bit_clear(mode, self.__MODE_RESTART), self.__MODE1_SLEEP)
+    self.write(self.__MODE1,newmode)
     return mode
 
   def wakeup(self):
     # To restart with previous PWM values
-    mode = self.read(__MODE1)
-    if (mode & __MODE1_RESTART ): # if restart is raised, unsleep and wait cycle
-      self.write(__MODE1, self.bit_clear(mode, __MODE1_RESTART | __MODE1_SLEEP))
-      time.sleep(__WAIT_CYCLE)
+    mode = self.read(self.__MODE1)
+    if (mode & self.__MODE1_RESTART ): # if restart is raised, unsleep and wait cycle
+      self.write(self.__MODE1, self.bit_clear(mode, self.__MODE1_RESTART | self.__MODE1_SLEEP))
+      time.sleep(self.__WAIT_CYCLE)
     # Then restart previous PWM values
-    self.write( __MODE1, self.bit_set(mode, __MODE1_RESTART))
+    self.write( self.__MODE1, self.bit_set(mode, self.__MODE1_RESTART))
     return mode
 
   def setLED_duty(self, led, on, off):
@@ -97,26 +97,26 @@ class PCA9685:
     H_on  = (on >> 8) & 0x0F
     L_off = off & 0xFF
     H_off = (off >> 8) & 0x0F
-    self.write(__LED0_ON_L+4*led, L_on)
-    self.write(__LED0_ON_H+4*led, H_on)
-    self.write(__LED0_OFF_L+4*led, L_off)
-    self.write(__LED0_OFF_H+4*led, H_off)
+    self.write(self.__LED0_ON_L+4*led, L_on)
+    self.write(self.__LED0_ON_H+4*led, H_on)
+    self.write(self.__LED0_OFF_L+4*led, L_off)
+    self.write(self.__LED0_OFF_H+4*led, H_off)
 
   def setLED_ON(self, led):
-    self.write(__LED0_ON_L+4*led, 0)
-    self.write(__LED0_ON_H+4*led, 0x10)
-    self.write(__LED0_OFF_L+4*led, 0)
-    self.write(__LED0_OFF_H+4*led, 0)
+    self.write(self.__LED0_ON_L+4*led, 0)
+    self.write(self.__LED0_ON_H+4*led, 0x10)
+    self.write(self.__LED0_OFF_L+4*led, 0)
+    self.write(self.__LED0_OFF_H+4*led, 0)
 
   def setLED_OFF(self, led):
-    self.write(__LED0_ON_L+4*led, 0)
-    self.write(__LED0_ON_H+4*led, 0)
-    self.write(__LED0_OFF_L+4*led, 0)
-    self.write(__LED0_OFF_H+4*led, 0x10)
+    self.write(self.__LED0_ON_L+4*led, 0)
+    self.write(self.__LED0_ON_H+4*led, 0)
+    self.write(self.__LED0_OFF_L+4*led, 0)
+    self.write(self.__LED0_OFF_H+4*led, 0x10)
 
   def setPWMFreq(self, freq):
     "Sets the PWM Prescale based on frequency"
-    prescaleval = __INTERNAL_CLOCK / ( __CYCLE_TICKS * float(freq))
+    prescaleval = self.__INTERNAL_CLOCK / ( self.__CYCLE_TICKS * float(freq))
     prescaleval -= 1.0
 
     # Set sleep mode before prescale set
