@@ -68,10 +68,10 @@ class PCA9685:
     "Read an unsigned byte from the I2C device"
     return self.bus.read_byte_data(self.address, reg)
 
-  def bit_set(val, bitmask):
+  def bit_set(self, val, bitmask):
     return val |  bitmask
 
-  def bit_clear(val, bitmask):
+  def bit_clear(self, val, bitmask):
     return val & (0xFF - bitmask)
 
   def sleep(self):
