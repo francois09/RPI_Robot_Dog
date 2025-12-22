@@ -6,8 +6,7 @@ After=network-online.target nss-user-lookup.target auditd.service
 User=root
 PermissionsStartOnly=true
 ExecStart=/root/RobotServer.sh
-Restart=on-failure
-RestartSec=5
+Restart=no
 KillMode=process
 
 [Install]
