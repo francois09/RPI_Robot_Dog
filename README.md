@@ -11,7 +11,7 @@ self-working mode. No AI included :)
 
 The original kit was provided by [Freenove](https://www.freenove.com/).
 
-Run following command to download all the files in this repository.
+Run following command to download all the files from original repository.
 
 	`git clone https://github.com/Freenove/Freenove_Robot_Dog_Kit_for_Raspberry_Pi.git`
 
