@@ -8,21 +8,24 @@ led=Led()
 def Led_fetch():
     try:
         # Red wipe
-        led.colorWipe([127,0,0])
+        led.colorWipe([63,0,0])
+        led.colorWipe([0, 0, 0])   #turn off the light
     except KeyboardInterrupt:
         led.colorWipe([0, 0, 0])   #turn off the light
 
 def Led_pull():
     try:
         # Blue wipe
-        led.colorWipe([0,0,127])
+        led.colorWipe([0,0,63])
+        led.colorWipe([0, 0, 0])   #turn off the light
     except KeyboardInterrupt:
         led.colorWipe([0, 0, 0])   #turn off the light
 
 def Led_start():
     try:
         # Green wipe
-        led.colorWipe([0,127,0])
+        led.colorWipe([0,63,0])
+        led.colorWipe([0, 0, 0])   #turn off the light
     except KeyboardInterrupt:
         led.colorWipe([0, 0, 0])   #turn off the light
 

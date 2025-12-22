@@ -53,9 +53,10 @@ class PCA9685:
   __INTERNAL_CLOCK = 25000000.0 # 25 MHz
   __CYCLE_TICKS = 4096 # Nubmer of steps in a cycle
 
-  def __init__(self, address):
+  def __init__(self, address, debug=True):
     self.bus = smbus.SMBus(1)
     self.address = address
+    self.debug = debug
     # 
     # mode1 = self.read(self.__MODE1)
     # self.write(self.__MODE1, 0x00)
@@ -63,10 +64,15 @@ class PCA9685:
   def write(self, reg, value):
     "Writes an 8-bit value to the specified register/address"
     self.bus.write_byte_data(self.address, reg, value)
+    if debug:
+      print("Write register(".hex(reg).") <- ".hex(value))
 
   def read(self, reg):
     "Read an unsigned byte from the I2C device"
-    return self.bus.read_byte_data(self.address, reg)
+    value = self.bus.read_byte_data(self.address, reg)
+    if debug:
+      print("Read register(".hex(reg)."): ".hex(value))
+    return value
 
   def bit_set(self, val, bitmask):
     return val |  bitmask
