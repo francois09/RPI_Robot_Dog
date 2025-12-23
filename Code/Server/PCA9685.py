@@ -74,19 +74,28 @@ class PCA9685:
       print("Read register(" + hex(reg) + "): " + hex(value))
     return value
 
-  def bit_set(self, val, bitmask):
+  def set_bit(self, val, bitmask):
     return val |  bitmask
 
-  def bit_clear(self, val, bitmask):
+  def is_bit_set(self, val, bitmask):
+    return val & bitmask
+
+  def is_bit_clear(self, val, bitmask):
+    return (val & bitmask) != bitmask
+
+  def clear_bit(self, val, bitmask):
     return val & (0xFF - bitmask)
 
   def sleep(self):
     # If sleep mode is set without stopping PWM, Reset will raise
-    if self.debug:
-      print("Entering sleep mode")
     mode = self.read(self.__MODE1)
-    newmode = self.bit_set( self.bit_clear(mode, self.__MODE1_RESTART), self.__MODE1_SLEEP)
-    self.write(self.__MODE1,newmode)
+    if (is_bit_set(mode, self.__MODE1_SLEEP) and self.debug):
+      print("Already in sleep mode")
+    if is_bit_clear(mode, self.__MODE1_SLEEP):
+      if self.debug:
+        print("Entering sleep mode")
+      newmode = self.set_bit( self.clear_bit(mode, self.__MODE1_RESTART), self.__MODE1_SLEEP)
+      self.write(self.__MODE1,newmode)
     return mode
 
   def wakeup(self):
@@ -95,10 +104,10 @@ class PCA9685:
       print("Leaving sleep mode")
     mode = self.read(self.__MODE1)
     if (mode & self.__MODE1_RESTART ): # if restart is raised, unsleep and wait cycle
-      self.write(self.__MODE1, self.bit_clear(mode, self.__MODE1_RESTART | self.__MODE1_SLEEP))
+      self.write(self.__MODE1, self.clear_bit(mode, self.__MODE1_RESTART | self.__MODE1_SLEEP))
       time.sleep(self.__WAIT_CYCLE)
     # Then restart previous PWM values
-    self.write( self.__MODE1, self.bit_set(mode, self.__MODE1_RESTART))
+    self.write( self.__MODE1, self.set_bit(self.clear_bit(mode, self.__MODE1_SLEEP), self.__MODE1_RESTART))
     return mode
 
   def setLED_duty(self, led, on, off):
