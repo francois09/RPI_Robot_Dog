@@ -89,9 +89,9 @@ class PCA9685:
   def sleep(self):
     # If sleep mode is set without stopping PWM, Reset will raise
     mode = self.read(self.__MODE1)
-    if (is_bit_set(mode, self.__MODE1_SLEEP) and self.debug):
+    if (self.is_bit_set(mode, self.__MODE1_SLEEP) and self.debug):
       print("Already in sleep mode")
-    if is_bit_clear(mode, self.__MODE1_SLEEP):
+    if self.is_bit_clear(mode, self.__MODE1_SLEEP):
       if self.debug:
         print("Entering sleep mode")
       newmode = self.set_bit( self.clear_bit(mode, self.__MODE1_RESTART), self.__MODE1_SLEEP)
