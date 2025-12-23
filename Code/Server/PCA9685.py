@@ -113,7 +113,7 @@ class PCA9685:
   def setLED_duty(self, led, on, off):
     "Set on and off values for the nth led (0 to 15)"
     if self.debug:
-      print("Set duty value on LED "+string(led))
+      print("Set duty value on LED "+str(led))
     L_on  = on & 0xFF
     H_on  = (on >> 8) & 0x0F
     L_off = off & 0xFF
