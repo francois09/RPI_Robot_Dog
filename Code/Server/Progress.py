@@ -11,9 +11,10 @@ def Led_stopped():
         led.colorWipe([63,0,0])
         time.sleep(1)
         led.colorWipe([0, 0, 0])   #turn off the light
-        led.colorWipe([63,0,0])
         time.sleep(1)
-        led.colorWipe([0, 0, 0])   #turn off the light
+        led.colorWipe([63,0,0])
+        # time.sleep(1)
+        # led.colorWipe([0, 0, 0])   #turn off the light
     except KeyboardInterrupt:
         led.colorWipe([0, 0, 0])   #turn off the light
 
