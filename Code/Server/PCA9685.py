@@ -6,6 +6,9 @@ import smbus
 
 # ============================================================================
 # PCA9685 16-Channel LED Driver
+#
+# This class implement (part of) circuit management, like setup clock prescale,
+# sleep or work mode, etc.
 # ============================================================================
 
 class PCA9685:
@@ -53,7 +56,17 @@ class PCA9685:
   __INTERNAL_CLOCK = 25000000.0 # 25 MHz
   __CYCLE_TICKS = 4096 # Nubmer of steps in a cycle
 
-  def __init__(self, address, debug=True):
+  # Debug levels
+  # 7 6 5 4 3 2 1 0
+  # | | | | | | | +-- Show read and write to registers
+  # | | | | | | +---- Show meta functions call
+  # | | | | | +------ Show duty values
+
+  __DBG_RW   = 0x01
+  __DBG_FUNC = 0x02
+  __DBG_DUTY = 0x04
+
+  def __init__(self, address, debug=self.__DBG_FUNC):
     self.bus = smbus.SMBus(1)
     self.address = address
     self.debug = debug
@@ -64,13 +77,13 @@ class PCA9685:
   def write(self, reg, value):
     "Writes an 8-bit value to the specified register/address"
     self.bus.write_byte_data(self.address, reg, value)
-    if self.debug:
+    if self.is_bit_set(self.debug, self.__DBG_RW):
       print("Write register(" + hex(reg) + ") <- " + hex(value))
 
   def read(self, reg):
     "Read an unsigned byte from the I2C device"
     value = self.bus.read_byte_data(self.address, reg)
-    if self.debug:
+    if self.is_bit_set(self.debug, self.__DBG_RW):
       print("Read register(" + hex(reg) + "): " + hex(value))
     return value
 
@@ -89,31 +102,40 @@ class PCA9685:
   def sleep(self):
     # If sleep mode is set without stopping PWM, Reset will raise
     mode = self.read(self.__MODE1)
-    if (self.is_bit_set(mode, self.__MODE1_SLEEP) and self.debug):
-      print("Already in sleep mode")
     if self.is_bit_clear(mode, self.__MODE1_SLEEP):
-      if self.debug:
+      if self.is_bit_set(self.debug, self.__DBG_FUNC):
         print("Entering sleep mode")
       newmode = self.set_bit( self.clear_bit(mode, self.__MODE1_RESTART), self.__MODE1_SLEEP)
       self.write(self.__MODE1,newmode)
+    else:
+      if self.is_bit_set(self.debug, self.__DBG_FUNC):
+        print("Already in sleep mode")
     return mode
 
   def wakeup(self):
     # To restart with previous PWM values
-    if self.debug:
-      print("Leaving sleep mode")
     mode = self.read(self.__MODE1)
     if (mode & self.__MODE1_RESTART ): # if restart is raised, unsleep and wait cycle
+      if self.is_bit_set(self.debug, self.__DBG_FUNC):
+        print("Leaving sleep mode")
       self.write(self.__MODE1, self.clear_bit(mode, self.__MODE1_RESTART | self.__MODE1_SLEEP))
       time.sleep(self.__WAIT_CYCLE)
+    else:
+      if self.is_bit_set(self.debug, self.__DBG_FUNC):
+        print("Not in sleep mode")
+
     # Then restart previous PWM values
+    if self.is_bit_set(self.debug, self.__DBG_FUNC):
+      print("Do restart")
     self.write( self.__MODE1, self.set_bit(self.clear_bit(mode, self.__MODE1_SLEEP), self.__MODE1_RESTART))
     return mode
 
   def setLED_duty(self, led, on, off):
     "Set on and off values for the nth led (0 to 15)"
-    if self.debug:
-      print("Set duty value on LED "+str(led))
+    if self.is_bit_set(self.debug, self.__DBG_FUNC):
+      print("Set duty value LED "+str(led))
+    if self.is_bit_set(self.debug, self.__DBG_DUTY):
+      print("Set duty value on LED "+str(led)+": ("+str(on)+","+str(off)+")")
     L_on  = on & 0xFF
     H_on  = (on >> 8) & 0x0F
     L_off = off & 0xFF
@@ -124,12 +146,20 @@ class PCA9685:
     self.write(self.__LED0_OFF_H+4*led, H_off)
 
   def setLED_ON(self, led):
+    if self.is_bit_set(self.debug, self.__DBG_FUNC):
+      print("Set full ON LED "+str(led))
+    if self.is_bit_set(self.debug, self.__DBG_DUTY):
+      print("Set duty value on LED "+str(led)+": Full ON")
     self.write(self.__LED0_ON_L+4*led, 0)
     self.write(self.__LED0_ON_H+4*led, 0x10)
     self.write(self.__LED0_OFF_L+4*led, 0)
     self.write(self.__LED0_OFF_H+4*led, 0)
 
   def setLED_OFF(self, led):
+    if self.is_bit_set(self.debug, self.__DBG_FUNC):
+      print("Set full OFF LED "+str(led))
+    if self.is_bit_set(self.debug, self.__DBG_DUTY):
+      print("Set duty value on LED "+str(led)+": Full OFF")
     self.write(self.__LED0_ON_L+4*led, 0)
     self.write(self.__LED0_ON_H+4*led, 0)
     self.write(self.__LED0_OFF_L+4*led, 0)
@@ -141,24 +171,11 @@ class PCA9685:
     prescaleval -= 1.0
 
     # Set sleep mode before prescale set
-    mode = self.sleep()
+    self.sleep()
+    if self.is_bit_set(self.debug, self.__DBG_FUNC):
+      print("Set Freq("+str(freq)+"): prescale value: "+str(int(math.floor(prescaleval + 0.5))))
     self.write(self.__PRESCALE, int(math.floor(prescaleval + 0.5)))
     self.wakeup()
-
-  # def setPWM(self, channel, on, off):
-  #   "Sets a single PWM channel"
-  #   self.write(self.__LED0_ON_L+4*channel, on & 0xFF)
-  #   self.write(self.__LED0_ON_H+4*channel, on >> 8)
-  #   self.write(self.__LED0_OFF_L+4*channel, off & 0xFF)
-  #   self.write(self.__LED0_OFF_H+4*channel, off >> 8)
-
-  # def setMotorPwm(self,channel,duty):
-  #   self.setPWM(channel,0,duty)
-
-  # def setServoPulse(self, channel, pulse):
-  #   "Sets the Servo Pulse,The PWM frequency must be 50HZ"
-  #   pulse = pulse*4096/20000        #PWM frequency is 50HZ,the period is 20000us
-  #   self.setPWM(channel, 0, int(pulse))
 
 if __name__=='__main__':
     pass
