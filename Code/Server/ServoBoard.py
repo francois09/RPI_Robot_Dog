@@ -13,6 +13,7 @@ import time
 # Servo list:
 #
 # Head: 15
+#              From shoulder to feet
 # Front right: 11, 12, 13
 # Rear right: 8, 9, 10
 # Front left: 4, 3, 2
@@ -34,9 +35,9 @@ class ServoBoard:
 
     def remap(self, val, From, To):
         "Remap val from From interval to To inverval"
-        return (To[1]-To[0])*(val-From[0]) / (From[1]-From[0]) + To[0]
+        return To[0] + (To[1]-To[0] + 1)*(val-From[0]) / (From[1]-From[0] + 1)
 
-    def setServoAngle(self,chan,angle)
+    def setServoAngle(self,chan,angle):
       if angle < self.angleMin:
           angle = self.angleMin
       elif angle > self.angleMax:
@@ -45,18 +46,20 @@ class ServoBoard:
       self.pca.setLED_duty(chan, 0, int(val))
 
 if __name__=='__main__':
+    sb=ServoBoard()
     while True:
       try:
-        self.setServoAngle(13,90)
-        timesleep(1)
-        self.setServoAngle(13,80)
-        timesleep(0.5)
-        self.setServoAngle(13,90)
-        timesleep(0.5)
-        self.setServoAngle(13,100)
-        timesleep(0.5)
+        sb.setServoAngle(13,90)
+        time.sleep(1)
+        sb.setServoAngle(13,80)
+        time.sleep(0.5)
+        sb.setServoAngle(13,90)
+        time.sleep(0.5)
+        sb.setServoAngle(13,100)
+        time.sleep(0.5)
 
       except KeyboardInterrupt:
+          sb.setServoAngle(13,90)
           print ("\nEnd test\n")
           break
     pass
