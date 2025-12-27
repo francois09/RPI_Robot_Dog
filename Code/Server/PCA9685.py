@@ -66,7 +66,7 @@ class PCA9685:
   __DBG_FUNC = 0x02
   __DBG_DUTY = 0x04
 
-  def __init__(self, address, debug=self.__DBG_FUNC):
+  def __init__(self, address, debug=__DBG_FUNC):
     self.bus = smbus.SMBus(1)
     self.address = address
     self.debug = debug
@@ -97,7 +97,7 @@ class PCA9685:
     return (val & bitmask) != bitmask
 
   def clear_bit(self, val, bitmask):
-    return val & (0xFF - bitmask)
+    return val & ~bitmask
 
   def sleep(self):
     # If sleep mode is set without stopping PWM, Reset will raise
