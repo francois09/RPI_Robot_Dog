@@ -17,5 +17,5 @@ python Progress.py start
 
 cp ~/point.txt .
 cp ~/params.json .
-python main.py -tn
-python Progress.py stop
+# python main.py -tn
+# python Progress.py stop
